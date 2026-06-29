@@ -1,7 +1,7 @@
 #!/usr/bin/env python3.14
 # import python 3.14
 # files = off
-"""CatSeek R1 1.0 Local — CatSeek Core · catr1 · DeepSeek-R1 · files=off"""
+"""CatSeek R1 · 1.0b — CatSeek Core · catr1b · files=off"""
 import tkinter as tk
 from tkinter import scrolledtext, font, messagebox
 import numpy as np
@@ -65,17 +65,19 @@ CONFIG = {
     "prose_tier": "catseek-r1-mythos",
     "mythos_tier": "mythos-class",
     "catseek_enabled": True,
-    "catseek_model_id": "catseek-r1-1.0-local",
+    "catseek_model_id": "catseek-r1-1.0b-local",
+    "catseek_edition": "1.0b",
     "catseek_context_window": 1_000_000,
     "catseek_max_output": 128_000,
-    "code_interpreter": "catr1",
-    "code_interpreter_name": "catr1",
-    "code_interpreter_family": "catr1-mythos",
-    "code_interpreter_version": "1.0",
+    "code_interpreter": "catr1b",
+    "code_interpreter_name": "catr1b",
+    "code_interpreter_family": "catr1b",
+    "code_interpreter_version": "1.0b",
     "catseek_code_enabled": True,
     "catr1_engine": True,
     "catr1_code_perfect": True,
-    "catr1_recursive_depth": 3,
+    "catr1_recursive_depth": 5,
+    "catr1b_lint": True,
     "code_auto_run": False,
     "code_output_exact": True,
     "code_token_weights_only": True,
@@ -85,7 +87,7 @@ CONFIG = {
     "deepmind_fast": True,
     "flash_attention": True,
     "adaptive_compute": True,
-    "turbo_encode_tasks": ("chat", "code", "math", "execute"),
+    "turbo_encode_tasks": ("chat", "code", "math", "execute", "explain"),
     "mythos_recursive_improve": True,
     "mythos_recursive_depth": 3,
     "mythos_recursive_epsilon": 0.04,
@@ -95,44 +97,81 @@ CONFIG = {
     "web_max_sites": 64,
     "web_max_fetch_kb": 256,
     "web_preview_port": None,
+    "gui_theme": "deepseek",
 }
 
+# DeepSeek Chat–inspired UI palette (chat.deepseek.com)
+DEEPSEEK_UI = {
+    "bg": "#ffffff",
+    "sidebar": "#f9fafb",
+    "sidebar_border": "#eceef2",
+    "header_bg": "#ffffff",
+    "header_border": "#eceef2",
+    "text": "#1b1f23",
+    "muted": "#9ca3af",
+    "user_bg": "#edf2ff",
+    "user_fg": "#1b1f23",
+    "bot_bg": "#ffffff",
+    "bot_fg": "#1b1f23",
+    "think_fg": "#9ca3af",
+    "code_bg": "#1e1e1e",
+    "code_fg": "#d4d4d4",
+    "input_bg": "#ffffff",
+    "input_border": "#e3e6ea",
+    "input_shadow": "#dfe3e8",
+    "accent": "#4d6bfe",
+    "accent_text": "#ffffff",
+    "send_hover": "#3b57e8",
+    "avatar_bot": "#4d6bfe",
+    "avatar_user": "#6b7280",
+    "new_chat_bg": "#ffffff",
+    "new_chat_border": "#d1d5db",
+    "history_hover": "#eef1f5",
+    "empty_title": "#111827",
+    "radius_pad": 16,
+    "input_radius": 20,
+}
+
+GUI_APP_NAME = "Cat R1"
+GUI_TAGLINE = "files = off"
+
 FILES = CONFIG["files"]
-BRAND = "CatSeek R1 1.0"
-MODEL_NAME = "CatSeek R1 1.0"
+BRAND = "CatSeek R1"
+EDITION = CONFIG.get("catseek_edition", "1.0b")
+MODEL_NAME = f"CatSeek R1 {EDITION}"
 CORE_NAME = "CatSeek Core"
 CATSEEK_MODEL_ID = CONFIG["catseek_model_id"]
 MYTHOS_TIER = CONFIG["mythos_tier"]
 CODE_ENGINE = CONFIG["code_interpreter_name"]
 CODE_BACKEND = CONFIG["code_interpreter"]
-CATR1_ENGINE = "catr1"
+CATR1_ENGINE = "catr1b"
 CATSEEK_CODE_ENABLED = CONFIG["catseek_code_enabled"]
 MYTHOS_MODE = CONFIG.get("mythos_mode", True)
 DEEPSEEK_R1_MODE = CONFIG.get("deepseek_r1_reasoning", True)
 MYTHOS_NAME = "Mythos-tier"
 REASONING_MODE = "deepseek-r1-cot"
 PROSE_TIER = CONFIG["prose_tier"]
-VERSION = "1.0"
+VERSION = EDITION
 
-CAT_R11_PROFILE_MD = f"""# {BRAND} (Local)
+CAT_R11_PROFILE_MD = f"""# {BRAND} {EDITION} (Local)
 
-**{CATSEEK_MODEL_ID}** · {CORE_NAME} · **files=off** · DeepSeek-R1 reasoning · Mythos prose · {CODE_ENGINE}.
+**{CATSEEK_MODEL_ID}** · {CORE_NAME} · **files=off** · **{CODE_ENGINE}** code engine.
 
 | | |
 |---|---|
-| Brand | {BRAND} — local assistant |
+| Brand | {BRAND} {EDITION} — local assistant |
 | Reasoning | DeepSeek-R1 chain-of-thought + self-verify (files=off) |
 | Prose | Mythos-tier extended thinking + recursive polish |
 | Runtime | {CORE_NAME} distillation stack (in-memory) |
 | Context | {CONFIG['catseek_context_window']:,} tokens (in-memory) |
 | Output | up to {CONFIG['catseek_max_output']:,} tokens |
-| Code | **catr1** (Claude Mythos engine) · vibe heuristics · files=off |
+| Code | **{CODE_ENGINE}** · recursive perfection · vibe heuristics · files=off |
 | Web | CatSeek Web Program — artifacts · fetch · preview (files=off) |
 | Architecture | CatSeek Linear · causal MHA · MoE FFN · ReLU² · RMSNorm |
 | Weights | AbsMean ternary {{−1, 0, 1}} @ {CONFIG['weight_bits']} bits |
 | API ID | `{CATSEEK_MODEL_ID}` |
 
-Run: `python3.14 catseekr1.py` · CLI: `python3.14 catseekr1.py --chat`
+Run: `python3.14 >catseekr1.10b.py` · CLI: `python3.14 >catseekr1.10b.py --chat`
 """
 
 
@@ -515,6 +554,8 @@ class CatSeekR1Fusion:
         if cls.is_noise(prompt):
             if re.search(r"how are you|how're you|how is it", last_user.lower()):
                 return "I'm doing well — thanks for asking! What's on your mind?"
+            if re.search(r"你好吗|怎么样|还好吗", prompt):
+                return "我很好，谢谢关心！你今天想聊什么？"
             return f"Still here — we were talking about \"{last_user[:60]}\". Want to continue that, or start something new?"
         return None
 
@@ -803,7 +844,7 @@ BitNetRivalCore = CatSeekR1Core
 bitnet_memory_report = catseek_memory_report
 
 
-# Casual chat — matched before educational intent routing
+# Casual chat — matched before educational intent routing (EN · 中文)
 _SMALLTALK: Tuple[Tuple[str, str], ...] = (
     (r"^(?:hi|hey|hello|yo|howdy)\s*[!?.]*$", "Hi! How can I help you today?"),
     (r"^how are you(?: doing| today)?\??$", "Doing well, thanks for asking! I'm here and ready to chat. How about you?"),
@@ -820,9 +861,78 @@ _SMALLTALK: Tuple[Tuple[str, str], ...] = (
     (r"^(?:good morning|good afternoon|good evening)\.?\??$", "Good to hear from you! What would you like to talk about?"),
     (r"^nice to meet you\.?\??$", "Nice to meet you too! Ask me anything — code, explanations, debugging, or just chat."),
     (r"^(?:are you ok|you ok|u ok)\??$", "I'm all good, thanks! How can I help?"),
-    (r"^what(?:'s| is) new\??$", "Same local CatSeek R1 1.0 engine, ready when you are. What's new with you?"),
+    (r"^what(?:'s| is) new\??$", "Same local CatSeek R1 engine, ready when you are. What's new with you?"),
     (r"^how do you feel\??$", "I feel ready to help! What's up?"),
+    (r"^(?:你好|您好|嗨|哈喽|在吗)[!！?？。.\s]*$", "你好！有什么我可以帮你的？"),
+    (r"^你好吗[!！?？]?$", "我很好，谢谢！你今天想聊点什么？"),
+    (r"^(?:早上好|下午好|晚上好)[!！?？]?$", "你好！很高兴见到你。需要什么帮助？"),
+    (r"^谢谢[!！?？]?$", "不客气！还需要别的帮助吗？"),
+    (r"^感谢[!！?？]?$", "不客气！随时可以继续问我。"),
+    (r"^(?:再见|拜拜)[!！?？]?$", "再见！期待下次聊天。"),
 )
+
+
+# Multilingual tokenization (EN · 中文 · mixed · files=off)
+_TOKEN_EN = re.compile(r"[a-z0-9+#]+", re.I)
+_TOKEN_CJK = re.compile(r"[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]")
+_ZH_QUESTION = re.compile(
+    r"(什么是|是什么|什么叫|何为|为何|为什么|为啥|怎么|如何|怎样|能否|可不可以|介绍一下|解释|说明|告诉我)"
+)
+_ZH_GREETING = re.compile(
+    r"^(你好|您好|嗨|哈喽|早上好|下午好|晚上好|在吗|你是谁|你好吗)[!！?？。.\s]*$"
+)
+_ZH_TOPIC = re.compile(
+    r"(?:什么是|是什么|什么叫|解释|说明|介绍|告诉我)(.+?)[?？。!！]?$"
+)
+
+
+def tokenize_text(text: str, max_tokens: int = 256) -> List[str]:
+    """Split English words and CJK characters for in-memory embedding (files=off)."""
+    raw = (text or "").strip()
+    if not raw:
+        return ["<unk>"]
+    lower = raw.lower()
+    tokens: List[str] = []
+    i = 0
+    while i < len(lower) and len(tokens) < max_tokens:
+        m = _TOKEN_EN.match(lower, i)
+        if m:
+            tokens.append(m.group(0))
+            i = m.end()
+            continue
+        m = _TOKEN_CJK.match(raw, i)
+        if m:
+            tokens.append(m.group(0))
+            i = m.end()
+            continue
+        i += 1
+    return tokens or ["<unk>"]
+
+
+def is_zh_question(text: str) -> bool:
+    return bool(_ZH_QUESTION.search(text or ""))
+
+
+def is_zh_greeting(text: str) -> bool:
+    s = (text or "").strip()
+    if _ZH_GREETING.match(s):
+        return True
+    return len(s) <= 10 and bool(re.search(r"^(你好|您好|你好吗|早上好|下午好|晚上好)", s))
+
+
+def is_explain_request(text: str) -> bool:
+    pl = (text or "").lower()
+    if re.search(r"\b(explain|what is|what are|what's|why|how (?:does|do|to|can|would|should))\b", pl):
+        return True
+    return is_zh_question(text or "")
+
+
+def extract_zh_topic(prompt: str) -> str:
+    s = (prompt or "").strip()
+    m = _ZH_TOPIC.search(s)
+    if m:
+        return m.group(1).strip("？?。!！ ")[:80]
+    return s[:80]
 
 
 # ──────────────────────────────────────────────────────────────
@@ -907,6 +1017,12 @@ class VibeCodeHeuristics:
             return False
         pl = raw.lower()
 
+        # "什么是 python" / "what is python" = explain, not code generation.
+        if is_explain_request(raw) and not cls.ZH_WRITE.search(raw):
+            if not re.search(r"\b(write|make|build|create|implement|code|vibe)\b", pl):
+                if not cls.EN_VIBE.search(raw):
+                    return False
+
         if re.match(r"^\s*(?:code|/code|code\s*>|>|program|script)\s*$", pl, re.I):
             return True
         if cls.CODE_SHAPES.search(raw):
@@ -927,8 +1043,12 @@ class VibeCodeHeuristics:
         if cls.ZH_LANG_INLINE.search(raw):
             return True
         if re.search(r"[\u4e00-\u9fff].*(html|python|javascript|java|rust|go|cpp|c\+\+|c\b)", raw, re.I):
+            if is_zh_question(raw) and not cls.ZH_WRITE.search(raw):
+                return False
             return True
         if re.search(r"(html|python|javascript|java|rust|go|cpp|c\+\+|c\b).*[\u4e00-\u9fff]", raw, re.I):
+            if is_zh_question(raw) and not cls.ZH_WRITE.search(raw):
+                return False
             return True
         if cls.has_cjk(raw) and re.search(r"(写|做|建|生成|程序|代码|脚本|网页)", raw):
             return True
@@ -1478,11 +1598,11 @@ class CatSeekWebProgram:
 
 
 # ──────────────────────────────────────────────────────────────
-# CATSEEK R1 CODE (catr1 · Claude Mythos engine · files=off)
+# CATSEEK R1 CODE (catr1b · CatSeek R1 1.0b · files=off)
 # ──────────────────────────────────────────────────────────────
 class CatSeekR1Code:
     """
-    catr1 — Claude Mythos-style code engine on CatSeek R1 1.0.
+    catr1b — CatSeek R1 1.0b code engine (files=off).
     Token-weight synthesis · recursive perfection · in-memory run loop. files=off.
     """
 
@@ -1539,7 +1659,7 @@ class CatSeekR1Code:
     @classmethod
     def code_help(cls) -> str:
         return (
-            f"**catr1** · Claude Mythos engine · CatSeek R1 1.0 · files=off\n\n"
+            f"**catr1b** · CatSeek R1 {EDITION} · files=off\n\n"
             "Ask in **any human language** (English · 中文 · mixed) or paste code:\n"
             "- `write hello cat in c` · `帮我用python写你好`\n"
             "- `make a html that says meow` · `做个网页显示喵`\n"
@@ -1928,7 +2048,7 @@ class CatSeekR1Code:
     @classmethod
     def respond(cls, engine: "CatR11Engine", prompt: str) -> str:
         if not cls.enabled():
-            return f"catr1 is disabled. Set `catseek_code_enabled=True` in CONFIG (files=off)."
+            return f"catr1b is disabled. Set `catseek_code_enabled=True` in CONFIG (files=off)."
         prompt = cls._prompt_for_code(prompt, engine)
         norm = cls.normalize_prompt(prompt)
         vec = engine.encode_for_task(norm, task="code")
@@ -2065,16 +2185,16 @@ class TokenWeightCodeEmitter:
 
 
 # ──────────────────────────────────────────────────────────────
-# CATR1 — Claude Mythos code engine (files=off · perfect-code loop)
+# CATR1B — CatSeek R1 1.0b code engine (files=off · perfect-code loop)
 # ──────────────────────────────────────────────────────────────
 class CatR1MythosEngine:
     """
-    catr1: Claude Mythos-style code generation for CatSeek R1 1.0.
-    Recursive draft → syntax verify → polish → emit. No weight files (files=off).
+    catr1b: CatSeek R1 1.0b code engine (files=off).
+    Pattern library · 5-pass recursive perfection · lint · sandbox verify.
     """
 
     NAME = CATR1_ENGINE
-    FAMILY = "catr1-mythos"
+    FAMILY = "catr1b"
 
     _HELLO_CAT_C = (
         "#include <stdio.h>\n\n"
@@ -2085,20 +2205,66 @@ class CatR1MythosEngine:
         "}"
     )
 
+    _PY_HELLO = (
+        "def main() -> None:\n"
+        '    print("Hello, World!")\n\n'
+        "if __name__ == \"__main__\":\n"
+        "    main()"
+    )
+
+    _PY_HELLO_CAT = (
+        "def main() -> None:\n"
+        '    print("Hello Cat!")\n'
+        '    print("Meow!")\n\n'
+        "if __name__ == \"__main__\":\n"
+        "    main()"
+    )
+
+    _JS_HELLO = "console.log('Hello, World!');\n"
+
+    _RUST_HELLO = (
+        "fn main() {\n"
+        '    println!("Hello, World!");\n'
+        "}"
+    )
+
     @classmethod
-    def enabled(cls) -> bool:
-        return bool(CONFIG.get("catr1_engine", True) and CONFIG.get("catseek_code_enabled", True))
+    def _lint(cls, code: str, lang: str) -> str:
+        if not CONFIG.get("catr1b_lint", True):
+            return code
+        lines = [ln.rstrip() for ln in code.splitlines()]
+        while lines and not lines[0].strip():
+            lines.pop(0)
+        while lines and not lines[-1].strip():
+            lines.pop()
+        body = "\n".join(lines)
+        if lang == "python" and body and not body.endswith("\n"):
+            body += "\n"
+        return body
 
     @classmethod
     def _pattern_match(cls, prompt: str, lang: str, engine: "CatR11Engine") -> Optional[str]:
         pl = CatSeekR1Code.normalize_prompt(prompt).lower()
         if lang == "c" and re.search(r"\bhello\s+cat\b", pl):
             return cls._HELLO_CAT_C
-        if lang == "c" and re.search(r"\bhello\b", pl) and "cat" not in pl:
+        if lang == "c" and re.search(r"\bhello\b", pl):
             msg = CatSeekR1Code._subject(prompt, engine)
-            return TokenWeightCodeEmitter._c(msg if msg else "Hello")
-        if lang == "python" and ("fibonacci" in pl or re.search(r"\bfib\b", pl)):
-            return CatSeekR1Code._python(engine, prompt)
+            if "cat" not in pl:
+                return TokenWeightCodeEmitter._c(msg if msg else "Hello")
+        if lang == "cpp" and "hello" in pl:
+            msg = CatSeekR1Code._subject(prompt, engine)
+            return TokenWeightCodeEmitter._cpp(msg if msg else "Hello")
+        if lang == "python":
+            if "fibonacci" in pl or re.search(r"\bfib\b", pl):
+                return CatSeekR1Code._python(engine, prompt)
+            if re.search(r"\bhello\s+cat\b", pl):
+                return cls._PY_HELLO_CAT
+            if re.search(r"\bhello\s+world\b", pl) or pl.strip() in {"hello", "write hello in python"}:
+                return cls._PY_HELLO
+        if lang == "javascript" and "hello" in pl:
+            return cls._JS_HELLO
+        if lang == "rust" and "hello" in pl:
+            return cls._RUST_HELLO
         if lang == "html":
             return CatSeekR1Code._html(prompt, engine)
         return None
@@ -2180,7 +2346,11 @@ class CatR1MythosEngine:
                 if lang != "python":
                     break
             out = cls._fix(lang, out, prompt, reason)
-        return cls._polish(out, lang)
+        return cls._lint(cls._polish(out, lang), lang)
+
+    @classmethod
+    def enabled(cls) -> bool:
+        return bool(CONFIG.get("catr1_engine", True) and CONFIG.get("catseek_code_enabled", True))
 
     @classmethod
     def generate(
@@ -2246,7 +2416,7 @@ class CatSeekR1LLM:
     """
 
     MODEL_ID = CONFIG["catseek_model_id"]
-    NAME = "CatSeek R1 1.0"
+    NAME = "CatSeek R1 1.0b"
     FAMILY = "catseek-r1"
     CONTEXT_WINDOW = CONFIG["catseek_context_window"]
     MAX_OUTPUT = CONFIG["catseek_max_output"]
@@ -2310,8 +2480,12 @@ class CatSeekR1LLM:
         follow = CatSeekR1Fusion.session_followup(engine, prompt)
         if follow and CatSeekR1Fusion.is_noise(prompt):
             return "chat"
-        if engine.synth.smalltalk_reply(pl):
+        if is_zh_greeting(prompt.strip()):
             return "chat"
+        if engine.synth.smalltalk_reply(pl) or engine.synth.smalltalk_reply(prompt.strip()):
+            return "chat"
+        if is_explain_request(prompt) and not CatSeekR1Code.extract_prompt_code(prompt)[1]:
+            return "explain"
         if CONFIG.get("web_program_enabled") and CatSeekWebProgram.wants_web(pl):
             return "web"
         if CONFIG.get("catseek_code_enabled"):
@@ -2327,7 +2501,7 @@ class CatSeekR1LLM:
             return "creative"
         if engine._try_simple_math(prompt) is not None:
             return "math"
-        if any(x in pl for x in ("run code", "execute", "interpret", "/exec")):
+        if any(x in pl for x in ("run code", "execute", "interpret", "/exec", "运行", "执行")):
             return "execute"
         if pl in ("run it", "run this", "execute it", "test it", "run"):
             return "execute"
@@ -2335,7 +2509,11 @@ class CatSeekR1LLM:
             return "code"
         if any(k in pl for k in ("traceback", "exception", "error", "bug", "debug", "broken")):
             return "debug"
+        if is_explain_request(prompt):
+            return "explain"
         if re.search(r"\b(explain|what is|what are|why|how (?:does|do|to|can))\b", pl):
+            return "explain"
+        if re.search(r"(解释|说明|介绍)", prompt):
             return "explain"
         if re.search(r"\b(plan|architecture)\b", pl) and len(pl.split()) > 2:
             return "agent"
@@ -2430,7 +2608,7 @@ class CatSeekR1LLM:
         task = self.classify(prompt, engine)
         engine.encode_for_task(prompt, task=task)
         vec = engine.last_vec
-        _CATSEEK_FAST = frozenset({"chat", "code", "math", "execute", "web"})
+        _CATSEEK_FAST = frozenset({"chat", "code", "math", "execute", "web", "explain"})
         if task in _CATSEEK_FAST:
             engine.last_think = ""
             engine._pending_think = ""
@@ -2457,6 +2635,19 @@ class CatSeekR1LLM:
                     return engine.fusion.deepseek_math_wrap(prompt, result)
                 return f"Result: **{result}**"
 
+        if task == "explain":
+            dia = engine.get_dialect(engine.detect_locale(prompt))
+            intent = engine._best_intent(prompt)
+            if intent in {"recursion", "core", "help", "languages", "profile"}:
+                hit = engine._intent_response(intent, prompt, dia)
+                if hit:
+                    return self.self_check(prompt, hit, task, engine)
+            history = engine.chat_history[:-1] if engine.chat_history else []
+            body = engine.synth.synthesize(
+                prompt, [(m["role"], m["text"]) for m in history], vec=vec
+            )
+            return self.self_check(prompt, body, task, engine)
+
         if task == "execute":
             block_lang, code = engine.extract_code_block(prompt)
             exec_lang = CatSeekR1Code.detect_lang(
@@ -2472,7 +2663,7 @@ class CatSeekR1LLM:
             if not code:
                 return "Paste code in a fenced block, or generate code first then say **run it**."
             result = CatSeekR1Code.run(engine, exec_lang, code)
-            return f"**catr1** ({exec_lang} · files=off):\n\n```\n{result}\n```"
+            return f"**catr1b** ({exec_lang} · files=off):\n\n```\n{result}\n```"
 
         norm = CatSeekR1Code.normalize_prompt(prompt)
         if CONFIG.get("catseek_code_enabled") and CatSeekR1Code.wants_code_with_history(norm.lower(), engine):
@@ -2531,7 +2722,7 @@ class CatSeekR1LLM:
             "code_backend": CODE_BACKEND,
             "catseek_code_enabled": CATSEEK_CODE_ENABLED,
             "web_program": CONFIG.get("web_program_enabled", True),
-            "arch": "catseek_r1_1.0",
+            "arch": "catseek_r1_1.0b",
         }
 
 
@@ -2547,13 +2738,14 @@ class CatR11Synthesizer:
     def _normalize_chat(pl: str) -> str:
         s = pl.strip().lower()
         s = re.sub(r"\s+", " ", s)
-        return s.rstrip("?!.")
+        s = s.rstrip("?!.！？。")
+        return s
 
     @classmethod
     def smalltalk_reply(cls, pl: str) -> Optional[str]:
         s = cls._normalize_chat(pl)
         for pat, reply in _SMALLTALK:
-            if re.match(pat, s):
+            if re.match(pat, s) or re.match(pat, pl.strip()):
                 return reply
         return None
 
@@ -2561,7 +2753,10 @@ class CatR11Synthesizer:
     def is_educational(cls, pl: str) -> bool:
         if cls.smalltalk_reply(pl):
             return False
-        s = cls._normalize_chat(pl)
+        if is_explain_request(pl) or is_zh_question(pl):
+            return True
+        if re.search(r"(解释|说明|介绍|教程|原理)", pl):
+            return True
         patterns = (
             r"\b(explain|define|describe|what is|what are|why|how (?:does|do|to|can|would|should|could|will))\b",
             r"\b(compare|versus|vs\.?|difference|tutorial|implement|algorithm|architecture)\b",
@@ -2585,6 +2780,11 @@ class CatR11Synthesizer:
 
     def analyze(self, prompt: str) -> Dict[str, str]:
         pl = prompt.lower().strip()
+        if is_zh_greeting(prompt.strip()):
+            return {"intent": "casual", "topic": prompt.strip(), "pl": pl}
+        if is_explain_request(prompt) or re.search(r"(解释|说明|介绍)", prompt):
+            topic = extract_zh_topic(prompt) if VibeCodeHeuristics.has_cjk(prompt) else self._topic(prompt, pl)
+            return {"intent": "explain", "topic": topic, "pl": pl}
         topic = self._topic(prompt, pl)
         if self.smalltalk_reply(pl):
             return {"intent": "casual", "topic": topic, "pl": pl}
@@ -2627,6 +2827,15 @@ class CatR11Synthesizer:
         return ""
 
     def _explain(self, topic: str, pl: str, vec: Optional[np.ndarray] = None) -> str:
+        if ("python" in pl or "python" in topic.lower()) and VibeCodeHeuristics.has_cjk(topic + pl):
+            return (
+                f"**{topic.capitalize()}** — 清晰解释如下。\n\n"
+                "**Python** 是一种高级编程语言，语法简洁、生态丰富。\n\n"
+                "常用于脚本、Web 后端、数据分析、自动化和机器学习原型。\n\n"
+                "优点：开发快、库多、社区大。\n"
+                "缺点：GIL 限制 CPU 并行；大型项目建议加类型注解。\n\n"
+                "```python\nfor i in range(3):\n    print(i)\n```"
+            )
         kb = {
             ("recursion",): (
                 f"**{topic.capitalize()}** is when a function calls itself until it hits a base case, "
@@ -2636,6 +2845,13 @@ class CatR11Synthesizer:
                 "Example: `factorial(3)` waits on `factorial(2)` → `factorial(1)` returns 1, "
                 "then multiplies back up: 1 × 2 × 3 = 6.\n\n"
                 "Watch out for missing base cases — they cause stack overflow."
+            ),
+            ("递归",): (
+                "**递归**是函数调用自身，直到遇到**基准情况**（base case），然后逐层返回结果。\n\n"
+                "每次调用都有独立的栈帧。基准情况阻止无限调用；递归步骤处理更小规模的同一问题。\n\n"
+                "示例：`factorial(3)` 等待 `factorial(2)` → `factorial(1)` 返回 1，"
+                "再逐层相乘：1 × 2 × 3 = 6。\n\n"
+                "注意：缺少基准情况会导致栈溢出。"
             ),
             ("docker",): (
                 f"**Docker** packages an application and its dependencies into a **container** that runs "
@@ -2708,7 +2924,7 @@ class CatR11Synthesizer:
             ),
         }
         for keys, body in kb.items():
-            if any(k in pl for k in keys):
+            if any(k in pl or k in topic for k in keys):
                 return f"**{topic.capitalize()}** — here's a clear explanation.\n\n{body}"
         if not self.is_educational(pl):
             return self._casual(topic, pl, topic, vec)
@@ -2802,11 +3018,15 @@ class CatR11Synthesizer:
             return hit
         if any(k in pl for k in ("meow", "mew", "purr", "nya")):
             return (
-                f"Meow! I'm **{BRAND}** on CatSeek R1 1.0 (**files=off**). "
+                f"Meow! I'm **{BRAND}** {EDITION} (**files=off**). "
                 "Explain, code, debug, stories — what would you like?"
             )
         if pl in {"hey", "hi", "yo", "sup", "hello"}:
             return "Hi — good to see you. What would you like to work on?"
+        if is_zh_greeting(prompt.strip()):
+            return "你好！我是 Cat R1（files = off）。可以帮你写代码、解释概念或调试问题。"
+        if VibeCodeHeuristics.has_cjk(prompt) and len(prompt.strip()) <= 12:
+            return "你好！请告诉我你需要什么帮助——代码、解释或调试都可以。"
         if len(pl.split()) <= 4 and "?" not in prompt:
             return (
                 f"**{BRAND}** · DeepSeek-R1 + Mythos · files=off — "
@@ -3198,16 +3418,18 @@ class CatR11Engine:
                        "sh":"bash","shell":"bash","asm":"assembly","node":"javascript"}
         self.intent_map = {
             "hello": ["hi","hello","hey","yo","sup","good morning","good evening","howdy",
-                      "how are you","how're you","how is it going","what's up","whats up"],
-            "core": ["core","catseek","bitnet","ternary","-1, 0, 1","quantize","1.58","moe","cat seek"],
-            "recursion": ["recursion","recursive","function calls itself","factorial"],
-            "help": ["help","commands","menu","usage","what can you do","capabilities"],
-            "languages": ["supported languages","which language","experts","what languages"],
-            "profile": ["readme",".md","license","gpl3","about you","about yourself","who made you","who are you"],
-            "thanks": ["thanks","thank you","thx","appreciate"],
-            "goodbye": ["bye","goodbye","see you","later","exit"],
+                      "how are you","how're you","how is it going","what's up","whats up",
+                      "你好","您好","你好吗","嗨","哈喽","早上好","下午好","晚上好"],
+            "core": ["core","catseek","bitnet","ternary","-1, 0, 1","quantize","1.58","moe","cat seek","核心","三值"],
+            "recursion": ["recursion","recursive","function calls itself","factorial","递归"],
+            "help": ["help","commands","menu","usage","what can you do","capabilities","帮助","怎么用"],
+            "languages": ["supported languages","which language","experts","what languages","支持的语言","哪些语言"],
+            "profile": ["readme",".md","license","gpl3","about you","about yourself","who made you","who are you","你是谁"],
+            "thanks": ["thanks","thank you","thx","appreciate","谢谢","感谢"],
+            "goodbye": ["bye","goodbye","see you","later","exit","再见","拜拜"],
             "math": ["calculate","compute","sum","multiply","divide","equation"],
-            "explain": ["explain","what is","what are","define","meaning of","tell me about"],
+            "explain": ["explain","what is","what are","define","meaning of","tell me about",
+                        "什么是","是什么","解释","说明","介绍","为什么","如何"],
             "howto": ["how do","how to","how can","steps to","walk me through","tutorial"],
             "debug": ["error","bug","traceback","exception","crash","broken","not working"],
             "opinion": ["should i","recommend","opinion","think about"],
@@ -3215,10 +3437,10 @@ class CatR11Engine:
             "fable": ["fable","parable","allegory","bedtime story","tell me a story","write a story"],
         }
         self._category_lexicon = {
-            "greeting": ["hi", "hello", "hey", "morning", "evening", "sup"],
-            "farewell": ["bye", "goodbye", "later", "see you", "exit"],
-            "question": ["what", "why", "how", "who", "when", "where", "which", "?"],
-            "code": ["code", "script", "function", "class", "compile", "program", "syntax", "api"],
+            "greeting": ["hi", "hello", "hey", "morning", "evening", "sup", "你好", "您好", "嗨"],
+            "farewell": ["bye", "goodbye", "later", "see you", "exit", "再见", "拜拜"],
+            "question": ["what", "why", "how", "who", "when", "where", "which", "?", "什么", "为什么", "怎么", "如何"],
+            "code": ["code", "script", "function", "class", "compile", "program", "syntax", "api", "代码", "程序", "脚本"],
             "tech": ["python", "catseek", "core", "ai", "model", "neural", "gpu", "cpu", "server"],
             "creative": ["story", "poem", "joke", "idea", "name", "design"],
             "personal": ["you", "your", "yourself", "who are you"],
@@ -3273,8 +3495,16 @@ class CatR11Engine:
         for w in (
             "the", "a", "is", "are", "to", "for", "of", "in", "on", "with", "and", "or",
             "python", "code", "write", "explain", "help", "core", "model", "chat",
+            "你好", "谢谢", "什么", "解释", "递归", "代码", "程序", "帮助", "是", "的",
         ):
             words.add(w)
+        for phrase in (
+            "什么是", "是什么", "解释", "说明", "介绍", "为什么", "如何", "帮我", "写代码",
+        ):
+            words.add(phrase)
+        for keys in self.intent_map.values():
+            for phrase in keys:
+                words.update(tokenize_text(phrase, 64))
         ordered = sorted(words)[: CONFIG["vocab_size"] - 1]
         vocab = {w: i + 1 for i, w in enumerate(ordered)}
         vocab["<pad>"] = 0
@@ -3306,7 +3536,10 @@ class CatR11Engine:
         return self._student_layers[:count]
 
     def _token_embed(self, token: str) -> np.ndarray:
-        tid = self.vocab.get(token, 0)
+        key = token if not token.isascii() else token.lower()
+        tid = self.vocab.get(key)
+        if tid is None:
+            tid = abs(hash(key)) % max(len(self.embeddings) - 1, 1) + 1
         if tid >= len(self.embeddings):
             tid = 0
         return self.embeddings[tid].astype(np.float32)
@@ -3459,13 +3692,11 @@ class CatR11Engine:
         return self._o1_respond(prompt)
 
     def encode_prompt(self, prompt):
-        key = prompt.lower().strip()
+        key = prompt.strip()
         cached = self._embed_cache.get(key)
         if cached is not None:
             return cached
-        tokens = re.findall(r"[a-z0-9+#]+", key)[: CONFIG["max_seq"]]
-        if not tokens:
-            tokens = ["<unk>"]
+        tokens = tokenize_text(prompt, CONFIG["max_seq"])
         seq = np.stack([self._token_embed(t) for t in tokens], axis=0)
         out = self._layer_norm(seq)
         if len(self._embed_cache) < 256:
@@ -3495,9 +3726,9 @@ class CatR11Engine:
         vocab: set = set()
         for label, keys in self.intent_map.items():
             for k in keys:
-                vocab.update(re.findall(r"[a-z0-9+#]+", k.lower()))
+                vocab.update(tokenize_text(k, 64))
         for text, _ in corpus:
-            vocab.update(re.findall(r"[a-z0-9+#]+", text.lower()))
+            vocab.update(tokenize_text(text, 64))
         self._token_index = {t: i for i, t in enumerate(sorted(vocab))}
         self._intent_weights = np.zeros((len(self.intent_map), len(vocab) + 1), dtype=np.float32)
         labels = list(self.intent_map.keys())
@@ -3515,6 +3746,8 @@ class CatR11Engine:
         self._intent_trained = True
 
     def _key_matches(self, key: str, text: str) -> bool:
+        if VibeCodeHeuristics.has_cjk(key):
+            return key in text
         loose = {"fix", "best", "math", "later", "exit", "bug", "sum"}
         if len(key) <= 4 or key in loose:
             return bool(re.search(r"\b" + re.escape(key) + r"\b", text))
@@ -3539,15 +3772,22 @@ class CatR11Engine:
         return None
 
     def _score_categories(self, text: str) -> Dict[str, int]:
-        tokens = set(re.findall(r"[a-z0-9+#]+", text.lower()))
+        tokens = set(tokenize_text(text, 128))
         return {
             cat: sum(1 for w in words if w in tokens or w in text)
             for cat, words in self._category_lexicon.items()
         }
 
     def _extract_topic_words(self, prompt: str, n: int = 4) -> str:
+        if VibeCodeHeuristics.has_cjk(prompt):
+            zh = extract_zh_topic(prompt)
+            if zh and zh != prompt.strip():
+                return zh[:48]
+            chars = _TOKEN_CJK.findall(prompt)
+            if chars:
+                return "".join(chars[:n * 2])[:48]
         stop = {"the", "a", "an", "is", "are", "to", "for", "of", "in", "on", "my", "me", "i", "you", "please", "can", "do"}
-        words = [w for w in re.findall(r"[a-z0-9+#]+", prompt.lower()) if w not in stop and len(w) > 1]
+        words = [w for w in tokenize_text(prompt, 64) if w not in stop and len(w) > 1]
         return " ".join(words[:n]) if words else prompt.strip()[:48] or "that"
 
     def _try_simple_math(self, prompt: str) -> Optional[str]:
@@ -4116,7 +4356,7 @@ class CatR11Engine:
             if not code:
                 return "Usage: paste code in ``` fences, or `/run print('hi')`"
             result = CatSeekR1Code.run(self, exec_lang, code)
-            return f"**catr1** ({exec_lang} · files=off):\n```\n{result}\n```"
+            return f"**catr1b** ({exec_lang} · files=off):\n```\n{result}\n```"
         if pl == "/code":
             return CatSeekR1Code.code_help()
         if pl.startswith("/code "):
@@ -4146,7 +4386,7 @@ class CatR11Engine:
             resp = (
                 f"I'm **{BRAND}** — `{CATSEEK_MODEL_ID}` running locally (**files=off**).\n\n"
                 f"Reasoning: **DeepSeek-R1** chain-of-thought + self-verify · **Mythos-tier** extended thinking.\n\n"
-                f"Code: **catr1** (Claude Mythos engine) {'✓ enabled' if CATSEEK_CODE_ENABLED else 'off'} · {CORE_NAME} — {st['catseek_linear_layers']} CatSeek Linear layers, "
+                f"Code: **catr1b** (CatSeek R1 {EDITION}) {'✓ enabled' if CATSEEK_CODE_ENABLED else 'off'} · {CORE_NAME} — {st['catseek_linear_layers']} CatSeek Linear layers, "
                 f"{st['weight_bits']}-bit ternary weights, {CONFIG['catseek_context_window']:,} token context.\n\n"
                 f"In-memory: {st['shadow_params']:,} params · {st['packed_kb']:.0f}KB packed · no weight files.\n\n"
                 "I'm thorough, proactive, and self-checking — ask me anything."
@@ -4173,54 +4413,382 @@ class CatR11Engine:
         return [ln.strip() for ln in trace.split("\n") if ln.strip()]
 
 # ──────────────────────────────────────────────────────────────
-# GUI & API
+# GUI & API — DeepSeek Chat layout (chat.deepseek.com) · Cat R1 · files = off
 # ──────────────────────────────────────────────────────────────
 class CatR11GUI:
     def __init__(self, root):
-        self.root, self.engine = root, CatR11Engine()
-        root.title(f"{self.engine.name} | {self.engine.ver}"); root.geometry("850x620"); root.configure(bg="#050505")
-        self.fonts = {"mono": font.Font(family="Consolas" if os.name!="nt" else "Courier New", size=11),
-                      "bold": font.Font(family="Consolas" if os.name!="nt" else "Courier New", size=11, weight="bold"),
-                      "italic": font.Font(family="Consolas" if os.name!="nt" else "Courier New", size=10, slant="italic"),
-                      "small": font.Font(family="Consolas" if os.name!="nt" else "Courier New", size=9)}
-        self.chat = scrolledtext.ScrolledText(root, bg="#050505", fg="#00d9ff", font=self.fonts["mono"], insertbackground="cyan", relief="flat", padx=12, pady=12, state="disabled")
-        self.chat.pack(expand=True, fill="both")
-        # FIXED: Unpack 3 values (tag, color, font) not 2
-        for tag_name, color, fnt in [("user","#ffffff",self.fonts["bold"]),("think","#4a4a4a",self.fonts["italic"]),("bot","#00aaff",self.fonts["bold"]),("code","#00ffaa",self.fonts["small"])]:
-            self.chat.tag_config(tag_name, foreground=color, font=fnt)
-        inp = tk.Frame(root, bg="#050505"); inp.pack(fill="x", padx=10, pady=5)
-        self.entry = tk.Entry(inp, bg="#111", fg="#00d9ff", font=self.fonts["mono"], insertbackground="cyan", relief="flat", bd=2)
-        self.entry.pack(side="left", fill="x", expand=True, padx=(0,10)); self.entry.bind("<Return>", lambda e: self.send()); self.entry.focus_set()
-        btns = tk.Frame(inp, bg="#050505"); btns.pack(side="right")
-        for t,c in [("Help","help"),("Web","/web"),("Chat","/chat"),("Core","explain catseek core"),("Py","write python fibonacci")]:
-            tk.Button(btns, text=t, command=lambda c=c: self.entry.insert("end",c+" "), bg="#222", fg="#00d9ff", font=self.fonts["small"], relief="flat").pack(side="left", padx=2)
-        self.status = tk.Label(root, text="Ready", bg="#050505", fg="#666", font=self.fonts["small"], anchor="w"); self.status.pack(fill="x", padx=10, pady=2)
-        self.log("SYSTEM", f"{BRAND} · catr1 · DeepSeek-R1 · Web Program · files=off")
-        self.log("SYSTEM", self.engine.rival.stats_line())
-        self.log("SYSTEM", self.engine.fusion.stats_line())
+        self.root = root
+        self.engine = CatR11Engine()
+        self.ui = DEEPSEEK_UI
+        self._msg_widgets: List[tk.Widget] = []
+        self._history_items: List[str] = []
+
+        root.title(f"{GUI_APP_NAME} · {GUI_TAGLINE}")
+        root.geometry("1180x760")
+        root.minsize(920, 600)
+        root.configure(bg=self.ui["bg"])
+
+        self.fonts = {
+            "ui": font.Font(family="Segoe UI" if os.name == "nt" else "Helvetica Neue", size=12),
+            "ui_bold": font.Font(family="Segoe UI" if os.name == "nt" else "Helvetica Neue", size=12, weight="bold"),
+            "title": font.Font(family="Segoe UI" if os.name == "nt" else "Helvetica Neue", size=18, weight="bold"),
+            "logo": font.Font(family="Segoe UI" if os.name == "nt" else "Helvetica Neue", size=15, weight="bold"),
+            "small": font.Font(family="Segoe UI" if os.name == "nt" else "Helvetica Neue", size=10),
+            "mono": font.Font(family="Menlo" if os.name != "nt" else "Consolas", size=11),
+            "empty": font.Font(family="Segoe UI" if os.name == "nt" else "Helvetica Neue", size=22, weight="normal"),
+        }
+
+        outer = tk.Frame(root, bg=self.ui["bg"])
+        outer.pack(fill="both", expand=True)
+
+        # ── Sidebar (DeepSeek-style) ──
+        sidebar = tk.Frame(outer, bg=self.ui["sidebar"], width=268,
+                           highlightthickness=1, highlightbackground=self.ui["sidebar_border"])
+        sidebar.pack(side="left", fill="y")
+        sidebar.pack_propagate(False)
+
+        top_bar = tk.Frame(sidebar, bg=self.ui["sidebar"])
+        top_bar.pack(fill="x", padx=18, pady=(18, 10))
+        tk.Label(top_bar, text="🐱", font=self.fonts["title"], bg=self.ui["sidebar"], fg=self.ui["accent"]).pack(side="left")
+        name_col = tk.Frame(top_bar, bg=self.ui["sidebar"])
+        name_col.pack(side="left", padx=(8, 0))
+        tk.Label(name_col, text=GUI_APP_NAME, font=self.fonts["logo"], bg=self.ui["sidebar"],
+                 fg=self.ui["text"]).pack(anchor="w")
+        tk.Label(name_col, text=GUI_TAGLINE, font=self.fonts["small"], bg=self.ui["sidebar"],
+                 fg=self.ui["muted"]).pack(anchor="w")
+
+        new_chat_outer = tk.Frame(sidebar, bg=self.ui["new_chat_border"], padx=1, pady=1)
+        new_chat_outer.pack(fill="x", padx=16, pady=(6, 14))
+        tk.Button(
+            new_chat_outer, text="  +  New chat", font=self.fonts["ui_bold"],
+            bg=self.ui["new_chat_bg"], fg=self.ui["text"],
+            activebackground=self.ui["history_hover"], relief="flat", bd=0,
+            padx=12, pady=10, cursor="hand2", anchor="w", command=self._new_chat,
+        ).pack(fill="x")
+
+        tk.Label(sidebar, text="Recent", font=self.fonts["small"], bg=self.ui["sidebar"],
+                 fg=self.ui["muted"]).pack(anchor="w", padx=20, pady=(0, 4))
+        self.history_frame = tk.Frame(sidebar, bg=self.ui["sidebar"])
+        self.history_frame.pack(fill="both", expand=True, padx=10)
+
+        tk.Frame(sidebar, bg=self.ui["sidebar_border"], height=1).pack(fill="x", padx=16, pady=8)
+        foot = tk.Frame(sidebar, bg=self.ui["sidebar"])
+        foot.pack(fill="x", padx=18, pady=(0, 14))
+        tk.Label(foot, text=f"{EDITION} · catr1b · local", font=self.fonts["small"],
+                 bg=self.ui["sidebar"], fg=self.ui["muted"]).pack(anchor="w")
+
+        # ── Main panel ──
+        main = tk.Frame(outer, bg=self.ui["bg"])
+        main.pack(side="left", fill="both", expand=True)
+
+        header = tk.Frame(main, bg=self.ui["header_bg"], highlightthickness=1,
+                          highlightbackground=self.ui["header_border"], height=56)
+        header.pack(fill="x")
+        header.pack_propagate(False)
+
+        model_pill = tk.Frame(header, bg=self.ui["user_bg"], highlightthickness=1,
+                              highlightbackground=self.ui["input_border"])
+        model_pill.pack(side="left", padx=20, pady=12)
+        tk.Label(model_pill, text=f"  {GUI_APP_NAME}  ", font=self.fonts["ui_bold"],
+                 bg=self.ui["user_bg"], fg=self.ui["accent"]).pack(side="left", padx=4, pady=4)
+        tk.Label(model_pill, text="▾", font=self.fonts["small"],
+                 bg=self.ui["user_bg"], fg=self.ui["muted"]).pack(side="left", padx=(0, 6))
+
+        self.header_status = tk.Label(header, text="Ready", font=self.fonts["small"],
+                                      bg=self.ui["header_bg"], fg=self.ui["muted"])
+        self.header_status.pack(side="right", padx=22)
+
+        # Chat area + empty state
+        chat_outer = tk.Frame(main, bg=self.ui["bg"])
+        chat_outer.pack(fill="both", expand=True)
+
+        self.empty_state = tk.Frame(chat_outer, bg=self.ui["bg"])
+        self.empty_state.place(relx=0.5, rely=0.42, anchor="center")
+        tk.Label(self.empty_state, text="🐱", font=self.fonts["title"], bg=self.ui["bg"],
+                 fg=self.ui["accent"]).pack()
+        tk.Label(self.empty_state, text=GUI_APP_NAME, font=self.fonts["empty"], bg=self.ui["bg"],
+                 fg=self.ui["empty_title"]).pack(pady=(8, 4))
+        tk.Label(self.empty_state, text="How can I help you today?", font=self.fonts["ui"],
+                 bg=self.ui["bg"], fg=self.ui["muted"]).pack()
+        tk.Label(self.empty_state, text=GUI_TAGLINE, font=self.fonts["small"],
+                 bg=self.ui["bg"], fg=self.ui["muted"]).pack(pady=(6, 0))
+
+        chat_wrap = tk.Frame(chat_outer, bg=self.ui["bg"])
+        chat_wrap.pack(fill="both", expand=True, padx=0, pady=0)
+
+        self.chat_canvas = tk.Canvas(chat_wrap, bg=self.ui["bg"], highlightthickness=0, bd=0)
+        scrollbar = tk.Scrollbar(chat_wrap, orient="vertical", command=self.chat_canvas.yview,
+                                 width=10, troughcolor=self.ui["bg"],
+                                 activebackground=self.ui["input_border"])
+        self.chat_canvas.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side="right", fill="y", padx=(0, 4))
+        self.chat_canvas.pack(side="left", fill="both", expand=True, padx=(24, 8))
+
+        self.messages_frame = tk.Frame(self.chat_canvas, bg=self.ui["bg"])
+        self._canvas_window = self.chat_canvas.create_window((0, 0), window=self.messages_frame, anchor="n")
+        self.messages_frame.bind("<Configure>", self._on_frame_configure)
+        self.chat_canvas.bind("<Configure>", self._on_canvas_configure)
+        self.chat_canvas.bind_all("<MouseWheel>", self._on_mousewheel, add="+")
+        if os.name != "nt":
+            self.chat_canvas.bind_all("<Button-4>", lambda e: self.chat_canvas.yview_scroll(-1, "units"), add="+")
+            self.chat_canvas.bind_all("<Button-5>", lambda e: self.chat_canvas.yview_scroll(1, "units"), add="+")
+
+        # Input bar — centered DeepSeek-style composer
+        input_outer = tk.Frame(main, bg=self.ui["bg"])
+        input_outer.pack(fill="x", padx=0, pady=(0, 20))
+
+        input_center = tk.Frame(input_outer, bg=self.ui["bg"])
+        input_center.pack(fill="x", padx=48)
+
+        shadow = tk.Frame(input_center, bg=self.ui["input_shadow"], padx=1, pady=1)
+        shadow.pack(fill="x")
+        border = tk.Frame(shadow, bg=self.ui["input_border"], padx=1, pady=1)
+        border.pack(fill="x")
+        input_box = tk.Frame(border, bg=self.ui["input_bg"])
+        input_box.pack(fill="x")
+
+        self._placeholder = f"Message {GUI_APP_NAME}..."
+        self._placeholder_active = True
+
+        self.entry = tk.Text(
+            input_box, height=2, font=self.fonts["ui"], bg=self.ui["input_bg"],
+            fg=self.ui["text"], insertbackground=self.ui["text"], relief="flat",
+            bd=0, padx=18, pady=14, wrap="word",
+        )
+        self.entry.pack(side="left", fill="both", expand=True)
+        self.entry.bind("<Return>", self._on_enter)
+        self.entry.bind("<KeyPress>", self._on_entry_key)
+        self.entry.bind("<<Paste>>", self._on_entry_edit)
+        self.entry.bind("<Button-1>", self._on_entry_click)
+        self.entry.bind("<KeyRelease>", self._sync_placeholder)
+        self.entry.bind("<FocusIn>", self._on_entry_focus_in)
+        self.entry.bind("<FocusOut>", self._on_entry_focus_out)
+        self._set_placeholder()
+        self.entry.focus_set()
+
+        send_wrap = tk.Frame(input_box, bg=self.ui["input_bg"])
+        send_wrap.pack(side="right", padx=(0, 12), pady=10)
+        self.send_btn = tk.Button(
+            send_wrap, text="↑", font=font.Font(size=15, weight="bold"),
+            bg=self.ui["accent"], fg=self.ui["accent_text"],
+            activebackground=self.ui["send_hover"], activeforeground=self.ui["accent_text"],
+            relief="flat", bd=0, width=2, height=1, cursor="hand2", command=self.send,
+        )
+        self.send_btn.pack()
+
+        tk.Label(
+            input_center,
+            text=f"{GUI_APP_NAME} · {GUI_TAGLINE} · AI-generated content · API :{CONFIG['api_port']}",
+            font=self.fonts["small"], bg=self.ui["bg"], fg=self.ui["muted"],
+        ).pack(anchor="center", pady=(8, 0))
+
         self._start_api()
+
+    @staticmethod
+    def _plain(text: str) -> str:
+        return re.sub(r"\*\*([^*]+)\*\*", r"\1", str(text)).replace("`", "")
+
+    def _entry_text(self) -> str:
+        return self.entry.get("1.0", "end-1c")
+
+    def _set_placeholder(self):
+        if not self._placeholder_active:
+            return
+        self.entry.config(state="normal")
+        self.entry.delete("1.0", "end")
+        self.entry.insert("1.0", self._placeholder)
+        self.entry.config(fg=self.ui["muted"])
+
+    def _clear_placeholder(self):
+        if not self._placeholder_active:
+            return
+        self._placeholder_active = False
+        self.entry.config(state="normal", fg=self.ui["text"])
+        self.entry.delete("1.0", "end")
+
+    def _sync_placeholder(self, _event=None):
+        if self._placeholder_active:
+            return
+        if not self._entry_text().strip():
+            self._placeholder_active = True
+            self._set_placeholder()
+
+    _PLACEHOLDER_SKIP_KEYS = frozenset({
+        "Shift_L", "Shift_R", "Control_L", "Control_R", "Alt_L", "Alt_R",
+        "Meta_L", "Meta_R", "Caps_Lock", "Tab",
+    })
+
+    def _on_entry_key(self, event):
+        if self._placeholder_active and event.keysym not in self._PLACEHOLDER_SKIP_KEYS:
+            self._clear_placeholder()
+
+    def _on_entry_click(self, _event=None):
+        if self._placeholder_active:
+            self._clear_placeholder()
+
+    def _on_entry_edit(self, _event=None):
+        if self._placeholder_active:
+            self._clear_placeholder()
+
+    def _on_entry_focus_in(self, _event=None):
+        if self._placeholder_active:
+            self._clear_placeholder()
+
+    def _on_entry_focus_out(self, _event=None):
+        if self._placeholder_active:
+            return
+        if not self._entry_text().strip():
+            self._placeholder_active = True
+            self._set_placeholder()
+
+    def _on_frame_configure(self, _event=None):
+        self.chat_canvas.configure(scrollregion=self.chat_canvas.bbox("all"))
+
+    def _on_canvas_configure(self, event):
+        width = min(event.width - 48, 820)
+        self.chat_canvas.itemconfig(self._canvas_window, width=max(width, 400))
+        x = max((event.width - width) // 2, 24)
+        self.chat_canvas.coords(self._canvas_window, x, 0)
+
+    def _on_mousewheel(self, event):
+        widget = self.chat_canvas.winfo_containing(event.x_root, event.y_root)
+        if widget in (self.chat_canvas, self.messages_frame) or str(widget).startswith(str(self.messages_frame)):
+            self.chat_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+    def _on_enter(self, event):
+        if event.state & 0x1:
+            return
+        self.send()
+        return "break"
+
+    def _hide_empty(self):
+        self.empty_state.place_forget()
+
+    def _show_empty(self):
+        if not self._msg_widgets:
+            self.empty_state.place(relx=0.5, rely=0.42, anchor="center")
+
+    def _add_history_item(self, title: str):
+        title = (title[:36] + "…") if len(title) > 37 else title
+        self._history_items.insert(0, title)
+        self._history_items = self._history_items[:8]
+        for w in self.history_frame.winfo_children():
+            w.destroy()
+        for item in self._history_items:
+            btn = tk.Button(
+                self.history_frame, text=item, font=self.fonts["ui"], bg=self.ui["sidebar"],
+                fg=self.ui["text"], activebackground=self.ui["history_hover"],
+                relief="flat", bd=0, anchor="w", padx=12, pady=8, cursor="hand2",
+                command=lambda t=item: self._prefill(t),
+            )
+            btn.pack(fill="x", padx=6, pady=1)
+
+    def _new_chat(self):
+        for w in self._msg_widgets:
+            w.destroy()
+        self._msg_widgets.clear()
+        self._show_empty()
+        self.header_status.config(text="Ready")
+
+    def _prefill(self, text: str):
+        self._clear_placeholder()
+        self.entry.delete("1.0", "end")
+        self.entry.insert("1.0", text if not text.endswith("…") else text[:-1])
+        self.entry.config(fg=self.ui["text"], state="normal")
+        self._placeholder_active = False
+        self.entry.focus_set()
+
+    def _avatar(self, parent, glyph: str, bg: str) -> tk.Frame:
+        av = tk.Label(
+            parent, text=glyph, font=self.fonts["ui_bold"], bg=bg, fg=self.ui["accent_text"],
+            width=2, height=1,
+        )
+        return av
+
+    def _append_message(self, role: str, text: str, kind: str = "text"):
+        self._hide_empty()
+        is_user = role == "user"
+        is_think = kind == "think"
+        plain = self._plain(text)
+
+        row = tk.Frame(self.messages_frame, bg=self.ui["bg"])
+        row.pack(fill="x", pady=(10, 10), padx=8)
+        self._msg_widgets.append(row)
+
+        inner = tk.Frame(row, bg=self.ui["bg"])
+        inner.pack(anchor="e" if is_user else "w", fill="x")
+
+        content_row = tk.Frame(inner, bg=self.ui["bg"])
+        content_row.pack(anchor="e" if is_user else "w")
+
+        if not is_user:
+            self._avatar(content_row, "R1", self.ui["avatar_bot"]).pack(side="left", padx=(0, 10), pady=2)
+
+        msg_col = tk.Frame(content_row, bg=self.ui["bg"])
+        msg_col.pack(side="left" if not is_user else "right")
+
+        if is_user:
+            bubble_bg, bubble_fg = self.ui["user_bg"], self.ui["user_fg"]
+        elif is_think:
+            bubble_bg, bubble_fg = self.ui["bg"], self.ui["think_fg"]
+        elif kind == "code":
+            bubble_bg, bubble_fg = self.ui["code_bg"], self.ui["code_fg"]
+        else:
+            bubble_bg, bubble_fg = self.ui["bot_bg"], self.ui["bot_fg"]
+
+        bubble = tk.Frame(msg_col, bg=bubble_bg)
+        if is_user or kind == "code":
+            bubble.config(highlightthickness=0 if kind == "code" else 0)
+        bubble.pack(anchor="e" if is_user else "w")
+
+        label_font = self.fonts["mono"] if kind == "code" else (self.fonts["small"] if is_think else self.fonts["ui"])
+        wrap = 640 if kind == "code" else 560
+        lbl = tk.Label(
+            bubble, text=plain, font=label_font, bg=bubble_bg, fg=bubble_fg,
+            justify="left", wraplength=wrap,
+            padx=self.ui["radius_pad"] if is_user or kind == "code" else 4,
+            pady=12 if (is_user or kind == "code") else 2,
+        )
+        lbl.pack()
+
+        if is_user:
+            self._avatar(content_row, "U", self.ui["avatar_user"]).pack(side="left", padx=(10, 0), pady=2)
+
+        self.root.after(10, self._scroll_to_bottom)
+
+    def _scroll_to_bottom(self):
+        self.chat_canvas.update_idletasks()
+        self.chat_canvas.yview_moveto(1.0)
 
     def log(self, sender, text, tag=None):
         if text is None:
             text = ""
-        text = str(text)
-        label_tag = tag or ("bot" if sender == self.engine.name else "user")
-        body_tag = tag or label_tag
-        self.chat.config(state="normal")
-        self.chat.insert("end", f"[{sender}]: ", label_tag)
-        self.chat.insert("end", f"{text}\n\n", body_tag)
-        self.chat.config(state="disabled")
-        self.chat.see("end")
+        text = str(text).strip()
+        if not text:
+            return
+        if sender in ("YOU", "API", "user"):
+            self._append_message("user", text)
+        elif sender == "THINK":
+            self._append_message("assistant", text, kind="think")
+        elif tag == "code":
+            self._append_message("assistant", text, kind="code")
+        else:
+            self._append_message("assistant", text)
         if sender == "SYSTEM":
-            self.status.config(text=text[:65])
+            self.header_status.config(text=text[:72])
 
     def send(self):
-        msg = self.entry.get().strip()
-        if not msg:
+        if self._placeholder_active:
             return
-        self.entry.delete(0, "end")
+        msg = self._entry_text().strip()
+        if not msg or msg == self._placeholder:
+            return
+        self.entry.delete("1.0", "end")
+        self._placeholder_active = True
+        self._set_placeholder()
+        self._add_history_item(msg)
         self.log("YOU", msg, "user")
-        self.status.config(text="Thinking...")
+        self.header_status.config(text="Thinking…")
         threading.Thread(target=self._infer, args=(msg,), daemon=True).start()
 
     def _infer(self, prompt):
@@ -4238,11 +4806,12 @@ class CatR11GUI:
             resp = (out.get("message") or {}).get("content", "") or "(no response)"
             self.root.after(0, lambda r=resp: self._display(r))
             sid = out.get("session", "")[:8]
-            self.root.after(0, lambda s=sid: self.status.config(text=f"Ready · {s}" if s else "Ready"))
+            self.root.after(0, lambda s=sid: self.header_status.config(
+                text=f"Ready · session {s}" if s else "Ready"))
         except Exception as exc:
             err = str(exc) or exc.__class__.__name__
             self.root.after(0, lambda e=err: self.log("SYSTEM", f"Error: {e}"))
-            self.root.after(0, lambda: self.status.config(text="Ready"))
+            self.root.after(0, lambda: self.header_status.config(text="Ready"))
 
     def _display(self, text):
         if not text:
@@ -4354,6 +4923,6 @@ if __name__ == "__main__":
         run_chat_cli(CatR11Engine())
     else:
         root = tk.Tk()
-        root.protocol("WM_DELETE_WINDOW", lambda: root.destroy() if messagebox.askokcancel("Quit", f"Exit {BRAND}?") else None)
+        root.protocol("WM_DELETE_WINDOW", lambda: root.destroy() if messagebox.askokcancel("Quit", f"Exit {GUI_APP_NAME}?") else None)
         CatR11GUI(root)
         root.mainloop()
